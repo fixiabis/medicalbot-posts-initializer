@@ -5,7 +5,7 @@ const url = (id: string) =>
 
 const selectors = {
   codeView:
-    '#admin-content-column>section>ui-view>form>:nth-child(2)>:nth-child(2)>.content.ng-binding',
+    '#admin-content-column>section>ui-view>form>div>div>div.sub-section.header>div.column.property-id>div.section-title.ng-binding',
 };
 
 async function getCode(page: Page, id: string) {

@@ -7,28 +7,21 @@ const redirectedUrlRegExp = /^https:\/\/analytics.google.com\/analytics\/web\/#\
 
 const selectors = {
   accountNameTextInput: '[name="name"]',
-  accountNameSubmitButton: 'ga-wizard-step:first-child .continueButton',
-  propertyTypeSubmitButton: 'ga-wizard-step:nth-child(2) .continueButton',
-  websiteNameTextInput: '[name="websiteName"]',
-  websiteUrlProtocolSelectControl:
-    'ga-url-selector ga-dropdown button:first-child',
-  websiteUrlProtocolSelectItem:
-    'ga-url-selector ga-dropdown li[ga-select-menu-item]:nth-child(2)',
-  websiteUrlTextInput: 'ga-url-selector input',
-  industrySelectControl: 'ga-industry-selector ga-dropdown button:first-child',
+  accountNameSubmitButton: '#cdk-step-content-0-0 > div > button',
+  websiteNameTextInput: '#name',
+  websiteNameSubmitButton: '#cdk-step-content-0-1 > div > div > button',
+  industrySelectControl:
+    '#cdk-step-content-0-2 > div > ga-business-info > gmat-card > div.card-body > industry-selector > searchable-select > button',
   industrySelectItem:
-    'ga-industry-selector ga-dropdown li[ga-select-menu-item][value="HEALTHCARE"]',
-  websiteInfoSubmitButton: 'ga-wizard-step:nth-child(3) .continueButton',
+    '#mat-menu-panel-3 > div > div > div > button:nth-child(11)',
+  businessSizeRadioItem: '#mat-radio-2 > label',
+  intendedUseCheckboxItem: '#mat-checkbox-2 > label',
+  submitButton:
+    '#cdk-step-content-0-2 > div > button.gmat-button.step-button.mat-focus-indicator.mat-flat-button.mat-button-base.mat-primary.ng-star-inserted',
   tosDpaCheckbox: '.large.ga-dialog > .tos-dpa > div > md-checkbox',
   dataSharingCoControllerTermsCheckbox:
     '.large.ga-dialog > .data-sharing-co-controller-terms > div:nth-child(4) > md-checkbox',
   confirmButton: '.large.ga-dialog > .ga-dialog-buttons > .btn.confirm-button',
-  saveButton:
-    '#mat-dialog-0 > email-preferences-dialog > div:nth-child(3) > .gmat-flat-button.save-button.mat-focus-indicator.mat-flat-button.mat-button-base.mat-primary',
-  dismissButton:
-    '#inproduct-guide-modal > .iph-dialog-dismiss-container > .iph-dialog-dismiss',
-  noThanksButton:
-    '#dialogContent_28 > div > div > .no-thanks-button.md-button.md-ga-theme.md-ink-ripple',
 };
 
 async function createAnalytics(
@@ -51,35 +44,19 @@ async function createAnalytics(
 
   await accountNameSubmitButton.click();
 
-  const propertyTypeSubmitButton = await page.waitForSelector(
-    selectors.propertyTypeSubmitButton
-  );
-
-  await propertyTypeSubmitButton.click();
-
   const websiteNameTextInput = await page.waitForSelector(
     selectors.websiteNameTextInput
   );
 
   await websiteNameTextInput.type(websiteName, { delay: 100 });
 
-  const websiteUrlProtocolSelectControl = await page.waitForSelector(
-    selectors.websiteUrlProtocolSelectControl
+  const websiteNameSubmitButton = await page.waitForSelector(
+    selectors.websiteNameSubmitButton
   );
 
-  await websiteUrlProtocolSelectControl.click();
+  await websiteNameSubmitButton.click();
 
-  const websiteUrlProtocolSelectItem = await page.waitForSelector(
-    selectors.websiteUrlProtocolSelectItem
-  );
-
-  await websiteUrlProtocolSelectItem.click();
-
-  const websiteUrlTextInput = await page.waitForSelector(
-    selectors.websiteUrlTextInput
-  );
-
-  await websiteUrlTextInput.type(websiteUrl, { delay: 100 });
+  await new Promise((delay) => setTimeout(delay, 2000));
 
   const industrySelectControl = await page.waitForSelector(
     selectors.industrySelectControl
@@ -93,11 +70,21 @@ async function createAnalytics(
 
   await industrySelectItem.click();
 
-  const websiteInfoSubmitButton = await page.waitForSelector(
-    selectors.websiteInfoSubmitButton
+  const businessSizeRadioItem = await page.waitForSelector(
+    selectors.businessSizeRadioItem
   );
 
-  await websiteInfoSubmitButton.click();
+  await businessSizeRadioItem.click();
+
+  const intendedUseCheckboxItem = await page.waitForSelector(
+    selectors.intendedUseCheckboxItem
+  );
+
+  await intendedUseCheckboxItem.click();
+
+  const submitButton = await page.waitForSelector(selectors.submitButton);
+
+  await submitButton.click();
 
   const tosDpaCheckbox = await page.waitForSelector(selectors.tosDpaCheckbox);
 
@@ -113,28 +100,6 @@ async function createAnalytics(
 
   await confirmButton.click();
   await page.waitForNavigation();
-
-  try {
-    await page.waitForSelector(selectors.saveButton, {
-      hidden: true,
-      timeout: 10000,
-    });
-  } catch (error) {
-    const saveButton = await page.waitForSelector(selectors.saveButton, {
-      visible: true,
-      timeout: 10000,
-    });
-
-    await saveButton.click();
-
-    const dismissButton = await page.waitForSelector(selectors.dismissButton);
-
-    await dismissButton.click();
-
-    const noThanksButton = await page.waitForSelector(selectors.noThanksButton);
-
-    await noThanksButton.click();
-  }
 
   const redirectedUrl = page.url();
   const analyticsId = redirectedUrl.replace(redirectedUrlRegExp, '$1$2');

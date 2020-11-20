@@ -4,7 +4,7 @@ import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 import { blogger, analytics } from './actions';
 
 const options: Puppeteer.LaunchOptions = {
-  headless: true,
+  headless: false,
   ignoreHTTPSErrors: true,
   defaultViewport: { width: 1366, height: 768 },
   args: ['--start-maximized', '--no-sandbox', '--disable-popup-blocking'],
@@ -15,8 +15,8 @@ PuppeteerExtra.use(StealthPlugin()).launch(options).then(runTask);
 const identifierId = 'twmedicalrobot001';
 const password = '7wm3d1c41r0b07';
 const blogDisplayName = 'twmedicalrobot001';
-const blogTitle = 'twmedicalrobot001-00-11';
-const blogDomainPrefix = 'twmedicalrobot001-00-11';
+const blogTitle = 'twmedicalrobot001-00-15';
+const blogDomainPrefix = 'twmedicalrobot001-00-15';
 const analyticsAccountName = 'twmedicalrobot001';
 const analyticsWebsiteName = 'twmedicalrobot001';
 const analyticsWebsiteUrl = `${blogDomainPrefix}.blogspot.com`;
@@ -36,23 +36,23 @@ async function runTask(browser: Browser) {
 
     console.log(`blog id: ${blogId}`);
 
-    const analyticsId = await analytics.createAnalytics(
-      page,
-      analyticsAccountName,
-      analyticsWebsiteName,
-      analyticsWebsiteUrl
-    );
+    // const analyticsId = await analytics.createAnalytics(
+    //   page,
+    //   analyticsAccountName,
+    //   analyticsWebsiteName,
+    //   analyticsWebsiteUrl
+    // );
 
-    console.log(`analytics id: ${analyticsId}`);
+    // console.log(`analytics id: ${analyticsId}`);
 
-    const analyticsCode = await analytics.getCode(page, analyticsId);
+    // const analyticsCode = await analytics.getCode(page, analyticsId);
 
-    console.log(`analytics code: ${analyticsCode}`);
+    // console.log(`analytics code: ${analyticsCode}`);
 
-    await blogger.setBlogAnalyticsCode(page, blogId, analyticsCode);
+    // await blogger.setBlogAnalyticsCode(page, blogId, analyticsCode);
   } catch (error) {
     console.log(error.message);
   } finally {
-    await browser.close();
+    // await browser.close();
   }
 }
