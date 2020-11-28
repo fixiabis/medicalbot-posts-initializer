@@ -77,7 +77,8 @@ async function setBlogTheme(page: Page, id: string, themeName: string) {
   const applyButton = await page.waitForSelector(selectors.applyButton);
 
   await applyButton.click();
-  await page.waitForSelector(selectors.applyButton, { hidden: true });
+
+  await new Promise((delay) => setTimeout(delay, 2000));
 }
 
 export default setBlogTheme;
