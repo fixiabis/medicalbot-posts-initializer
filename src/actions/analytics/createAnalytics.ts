@@ -21,6 +21,10 @@ const selectors = {
   tosDpaCheckbox: '.large.ga-dialog > .tos-dpa > div > md-checkbox',
   dataSharingCoControllerTermsCheckbox:
     '.large.ga-dialog > .data-sharing-co-controller-terms > div:nth-child(4) > md-checkbox',
+  advancedOptionButton:
+    '#cdk-step-content-0-1 > div > div > property-setup > button',
+  advancedOptionToggle: '#mat-slide-toggle-1 > label',
+  websiteDomainInput: '#mat-input-5',
   confirmButton: '.large.ga-dialog > .ga-dialog-buttons > .btn.confirm-button',
 };
 
@@ -44,6 +48,8 @@ async function createAnalytics(
 
   await accountNameSubmitButton.click();
 
+  await new Promise((delay) => setTimeout(delay, 2000));
+
   const websiteNameTextInput = await page.waitForSelector(
     selectors.websiteNameTextInput
   );
@@ -53,6 +59,24 @@ async function createAnalytics(
   const websiteNameSubmitButton = await page.waitForSelector(
     selectors.websiteNameSubmitButton
   );
+
+  const advancedOptionButton = await page.waitForSelector(
+    selectors.advancedOptionButton
+  );
+
+  advancedOptionButton.click();
+
+  const advancedOptionToggle = await page.waitForSelector(
+    selectors.advancedOptionToggle
+  );
+
+  advancedOptionToggle.click();
+
+  const websiteDomainInput = await page.waitForSelector(
+    selectors.websiteDomainInput
+  );
+
+  await websiteDomainInput.type(websiteUrl, { delay: 100 });
 
   await websiteNameSubmitButton.click();
 
@@ -67,6 +91,8 @@ async function createAnalytics(
   const industrySelectItem = await page.waitForSelector(
     selectors.industrySelectItem
   );
+
+  await new Promise((delay) => setTimeout(delay, 2000));
 
   await industrySelectItem.click();
 
