@@ -1,5 +1,5 @@
 import Axios from 'axios';
-import Puppeteer, { Browser } from 'puppeteer';
+import Puppeteer from 'puppeteer';
 import PuppeteerExtra from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 import { blogger, analytics } from './actions';
@@ -30,20 +30,44 @@ interface BlogInfo {
 }
 
 async function runTasks(blogInfos: BlogInfo[]) {
+  let browser: Puppeteer.Browser | null = null;
+  let page: Puppeteer.Page | null = null;
+  let prevBlogInfo: BlogInfo | null = null;
+
   for (const blogInfo of blogInfos) {
-    await runTask(blogInfo);
+    const isBlogInfoAccountSignedIn =
+      prevBlogInfo && blogInfo.account === prevBlogInfo.account;
+
+    if (!isBlogInfoAccountSignedIn && browser) {
+      const pages = await browser.pages();
+      await Promise.all(pages.map((page) => page.close()));
+      await browser.close();
+      browser = null;
+    }
+
+    if (!browser) {
+      browser = await PuppeteerExtra.launch(launchOptions);
+    }
+
+    page = await browser.newPage();
+
+    if (!isBlogInfoAccountSignedIn) {
+      await blogger.signIn(page, blogInfo.account, blogInfo.password);
+    } else {
+      await blogger.goto(page);
+    }
+
+    await runTask(page, blogInfo);
+    page.close();
+    page = null;
+    prevBlogInfo = blogInfo;
   }
 }
 
-async function runTask(blogInfo: BlogInfo) {
-  const browser = await PuppeteerExtra.launch(launchOptions);
-  const page = await browser.newPage();
-
+async function runTask(page: Puppeteer.Page, blogInfo: BlogInfo) {
   console.log('got info:', blogInfo);
 
   try {
-    await blogger.signIn(page, blogInfo.account, blogInfo.password);
-
     const blogId = await blogger.createBlog(
       page,
       blogInfo.title,
@@ -70,11 +94,5 @@ async function runTask(blogInfo: BlogInfo) {
     await blogger.setBlogTheme(page, blogId, blogInfo.themeName);
   } catch (error) {
     console.log(error.message);
-  } finally {
-    try {
-      const pages = await browser.pages();
-      await Promise.all(pages.map((page) => page.close()));
-      await browser.close();
-    } catch (error) {}
   }
 }
