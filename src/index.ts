@@ -35,8 +35,9 @@ async function runTasks(blogInfos: BlogInfo[]) {
   let prevBlogInfo: BlogInfo | null = null;
 
   for (const blogInfo of blogInfos) {
-    const isBlogInfoAccountSignedIn =
-      prevBlogInfo && blogInfo.account === prevBlogInfo.account;
+    const isBlogInfoAccountSignedIn = false;
+    // const isBlogInfoAccountSignedIn =
+    // prevBlogInfo && blogInfo.account === prevBlogInfo.account;
 
     if (!isBlogInfoAccountSignedIn && browser) {
       const pages = await browser.pages();
@@ -58,7 +59,7 @@ async function runTasks(blogInfos: BlogInfo[]) {
     }
 
     await runTask(page, blogInfo);
-    page.close();
+    await page.close();
     page = null;
     prevBlogInfo = blogInfo;
   }
